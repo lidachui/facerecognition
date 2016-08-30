@@ -1,11 +1,18 @@
 package com.work.leeds.facerecognition.fragment;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +28,8 @@ import android.widget.Toast;
 import com.work.leeds.facerecognition.MyApplication;
 import com.work.leeds.facerecognition.R;
 import com.work.leeds.facerecognition.bean.Apartment;
+import com.work.leeds.facerecognition.bean.User;
+import com.work.leeds.facerecognition.sqlite.DatabaseOperation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +95,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         mLinearLayout = (LinearLayout) inflater.inflate(R.layout.add_fragment_layout, container, false);
         initView();
         initEvent();
+        Toast.makeText(mContext, "onCreateView", Toast.LENGTH_SHORT).show();
         return mLinearLayout;
     }
 
@@ -112,12 +122,16 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         return mLinearLayout.findViewById(viewId);
     }
 
+    public static final int CHOOSE_PHOTO = 3;
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.id_add_user_btn:
-                //TODO 添加用户信息
-                Toast.makeText(mContext, "add user succeed", Toast.LENGTH_SHORT).show();
+                //添加用户信息
+                if (isInfoComplete()) {
+                    AddUserInfo();
+                }
                 break;
             case R.id.id_apartment_btn:
                 //选取部门
@@ -136,11 +150,111 @@ public class AddFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.id_add_back_btn:
                 //TODO 返回主界面
-                break;
-            case R.id.id_picture_btn:
-                //TODO 选取图片
 
                 break;
+            case R.id.id_picture_btn:
+                //选取图片
+                Intent intent = new Intent("android.intent.action.GET_CONTENT");
+                intent.setType("image/*");
+                startActivityForResult(intent, CHOOSE_PHOTO);//打开相册
+                break;
         }
+    }
+
+    /**
+     * 添加用户信息
+     */
+    private void AddUserInfo() {
+        User user = new User();
+        user.setName(mNameText.getText().toString().trim());
+        user.setId(mNumberText.getText().toString().trim());
+        user.setImageUri(mPictureText.getText().toString().trim());
+        user.setApartId(DatabaseOperation.queryApartIdByName(mAprtmentText.getText().toString().trim()));
+        //将数据添加到数据库
+        if(DatabaseOperation.queryUserByName(user.getId())){
+            Toast.makeText(mContext, "User has exsited", Toast.LENGTH_SHORT).show();
+        }else{
+            DatabaseOperation.UploadUserData(user);
+            Toast.makeText(mContext,"Add user succeed",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 信息填写是否完整
+     *
+     * @return
+     */
+    private boolean isInfoComplete() {
+        if (mNameText.getText().toString().equals("")
+                || mNumberText.getText().toString().equals("")
+                || mAprtmentText.getText().toString().equals("")
+                || mPictureText.getText().toString().equals("")) {
+            Toast.makeText(mContext, "有内容为空", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (mNumberText.getText().toString().trim().length() != 8) {
+            Toast.makeText(mContext, "工号长度为8", Toast.LENGTH_SHORT).show();
+            return false;
+        } else
+            return true;
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case CHOOSE_PHOTO:
+                //4.4及以上系统处理图片
+                handleImageOnKitKat(data);
+                break;
+        }
+    }
+
+    /**
+     * 处理选择图片
+     *
+     * @param data
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private void handleImageOnKitKat(Intent data) {
+        String imagePath = null;
+        Uri uri = data.getData();
+        if (DocumentsContract.isDocumentUri(mContext, uri)) {
+            //如果是document类型的uri，则通过document id处理
+            String docId = DocumentsContract.getDocumentId(uri);
+            if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+                //解析出数字格式的id
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+            } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+                imagePath = getImagePath(contentUri, null);
+            }
+        }
+        //将路径显示出来
+        mPictureText.setText(imagePath);
+
+    }
+
+    /**
+     * 获取图片真实路径
+     *
+     * @param uri
+     * @param selection
+     * @return
+     */
+    private String getImagePath(Uri uri, String selection) {
+        String path = null;
+        Cursor cursor = mContext.getContentResolver().query(uri, null, selection, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                //TODO 目前用的是绝对路径，以后迁移到远程数据库的时候改为将图片上传至数据库
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+
+            }
+            cursor.close();
+        }
+        return path;
     }
 }

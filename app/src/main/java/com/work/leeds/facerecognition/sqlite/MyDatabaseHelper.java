@@ -14,9 +14,10 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     //员工表
     public static final String CREATE_USER = "create table User ("
-            + "staffid integer primary key, "
+            + "staffid text primary key, "
             + "staffname text, "
-            + "apartid integer)";
+            + "apartid integer, "
+            + "staffimage text)";
     //部门表
     public static final String CREATE_PART = "create table Apartment ("
             + "apartid integer primary key, "
@@ -26,6 +27,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             + "recordid  integer primary key autoincrement, "
             + "staffid integer, "
             + "time integer)";
+
     public MyDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
         mContext = context;
@@ -36,7 +38,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_USER);
         db.execSQL(CREATE_PART);
         db.execSQL(CREATE_RECORD);
-        Toast.makeText(mContext,"CREATE SUCCEEDED!",Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "CREATE SUCCEEDED!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
