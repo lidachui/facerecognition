@@ -29,6 +29,7 @@ import com.work.leeds.facerecognition.MyApplication;
 import com.work.leeds.facerecognition.R;
 import com.work.leeds.facerecognition.bean.Apartment;
 import com.work.leeds.facerecognition.bean.User;
+import com.work.leeds.facerecognition.callback.onBackClickedListener;
 import com.work.leeds.facerecognition.sqlite.DatabaseOperation;
 
 import java.util.ArrayList;
@@ -150,7 +151,10 @@ public class AddFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.id_add_back_btn:
                 //TODO 返回主界面
-
+                if (getActivity() instanceof onBackClickedListener)
+                {
+                    ((onBackClickedListener) getActivity()).onBackClicked();
+                }
                 break;
             case R.id.id_picture_btn:
                 //选取图片
@@ -257,4 +261,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         }
         return path;
     }
+
+
+
 }

@@ -12,12 +12,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.work.leeds.facerecognition.callback.onBackClickedListener;
 import com.work.leeds.facerecognition.fragment.AddFragment;
 import com.work.leeds.facerecognition.fragment.MainFragment;
 import com.work.leeds.facerecognition.uimanager.ButtonManager;
 import com.work.leeds.facerecognition.util.Constants;
 
-public class MainActivity extends AppCompatActivity implements ButtonManager.onButtonClickedListener {
+public class MainActivity extends AppCompatActivity implements ButtonManager.onButtonClickedListener, onBackClickedListener {
 
 
     FrameLayout mFrameLayout;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
         //初始化相关组件
         initView();
         //设置默认的Fragment
-        initFragment();
+        initFragment(savedInstanceState);
         //设置默认的text
         mTextview.setText("欢迎使用");
         //初始化点击事件
@@ -45,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
 
     }
 
+    /**
+     * 插入部门相关表
+     */
     private void insertApartmentInfo() {
         //如果数据库不存在，则自动创建
         SQLiteDatabase db = MyApplication.myDatabaseHelper.getWritableDatabase();
@@ -86,12 +90,15 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
         mButtonManager.setonButtonClickedListener(this);
     }
 
-    private void initFragment() {
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-        mMainFragment = new MainFragment();
-        transaction.replace(R.id.main_content, mMainFragment, "one");
-        transaction.commit();
+    private void initFragment(Bundle savedInstanceState) {
+        //避免屏幕发生旋转再次实例化新的Fragment
+        if (savedInstanceState == null) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            mMainFragment = new MainFragment();
+            transaction.replace(R.id.main_content, mMainFragment, "one");
+            transaction.commit();
+        }
     }
 
     private void initView() {
@@ -122,11 +129,23 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
                 if (mAddFragment == null)
                     mAddFragment = new AddFragment();
                 transaction.replace(R.id.main_content, mAddFragment, "two");
+                transaction.addToBackStack("one");
                 transaction.commit();
                 break;
             case Constants.FUNCTION_GUIDE:
                 break;
 
         }
+    }
+
+
+    @Override
+    public void onBackClicked() {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+//        if (mMainFragment == null)
+//            mMainFragment = new MainFragment();
+        transaction.replace(R.id.main_content,mMainFragment);
+        transaction.commit();
     }
 }

@@ -24,32 +24,30 @@ public class MainFragment extends Fragment {
     LinearLayout mLinearLayout;
     Context mContext;
     private RollPagerView mRollViewPager;
+    private ImageAdapter mImageAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
+        mImageAdapter = new ImageAdapter();
+        Toast.makeText(mContext, "OnCreate mainfrgment", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mLinearLayout = (LinearLayout) inflater.inflate(R.layout.main_fragment_layout, container, false);
-        return mLinearLayout;
-    }
-
-    @Override
-    public void onStart() {
-
-        super.onStart();
-        Toast.makeText(mContext, "start main frgment", Toast.LENGTH_SHORT).show();
         mRollViewPager = (RollPagerView) mLinearLayout.findViewById(R.id.id_roll_view_pager);
         //设置播放时间间隔
         mRollViewPager.setPlayDelay(4000);
         //设置透明度
         mRollViewPager.setAnimationDurtion(500);
         //设置适配器
-        mRollViewPager.setAdapter(new ImageAdapter());
+        mRollViewPager.setAdapter(mImageAdapter);
         //设置指示器
         mRollViewPager.setHintView(new ColorPointHintView(mContext, Color.YELLOW, Color.WHITE));
+        Toast.makeText(mContext, "OnCreateView mainfrgment", Toast.LENGTH_SHORT).show();
+        return mLinearLayout;
     }
+
 }
