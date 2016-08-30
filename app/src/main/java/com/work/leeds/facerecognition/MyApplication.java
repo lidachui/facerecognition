@@ -11,7 +11,7 @@ import com.work.leeds.facerecognition.sqlite.MyDatabaseHelper;
  */
 public class MyApplication extends Application {
 
-     static MyDatabaseHelper myDatabaseHelper;
+     public static MyDatabaseHelper myDatabaseHelper;
 
 
     @Override

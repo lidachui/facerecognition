@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
                     "Table Apartment Insert Succeeded",
                     Toast.LENGTH_SHORT).show();
         }
+        cursor.close();
 
     }
 
