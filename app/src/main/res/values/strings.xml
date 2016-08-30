@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FaceRecognition</string>
+    <string name="add">添加</string>
+    <string name="check">查询</string>
+    <string name="guide">帮助</string>
+    <string name="sign">打卡</string>
+</resources>
