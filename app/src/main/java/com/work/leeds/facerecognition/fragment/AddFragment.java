@@ -82,8 +82,6 @@ public class AddFragment extends Fragment implements View.OnClickListener {
                 String apartname = cursor.getString(cursor.getColumnIndex("apartname"));
                 Apartment apart = new Apartment(apartnumber, apartname);
                 mList.add(apart);
-                Log.d("AddFragment", "apart number:" + apartnumber);
-                Log.d("AddFragment", "apart name:" + apartname);
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -96,7 +94,6 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         mLinearLayout = (LinearLayout) inflater.inflate(R.layout.add_fragment_layout, container, false);
         initView();
         initEvent();
-        Toast.makeText(mContext, "onCreateView", Toast.LENGTH_SHORT).show();
         return mLinearLayout;
     }
 
@@ -135,8 +132,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.id_apartment_btn:
-                //选取部门
-                //创建dialog选择
+                //创建dialog选取部门
                 new AlertDialog.Builder(mContext)
                         .setTitle("请选择部门")
                         .setItems(aparts, new DialogInterface.OnClickListener() {
@@ -151,8 +147,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.id_add_back_btn:
                 //TODO 返回主界面
-                if (getActivity() instanceof onBackClickedListener)
-                {
+                if (getActivity() instanceof onBackClickedListener) {
                     ((onBackClickedListener) getActivity()).onBackClicked();
                 }
                 break;
@@ -175,11 +170,11 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         user.setImageUri(mPictureText.getText().toString().trim());
         user.setApartId(DatabaseOperation.queryApartIdByName(mAprtmentText.getText().toString().trim()));
         //将数据添加到数据库
-        if(DatabaseOperation.queryUserByName(user.getId())){
+        if (DatabaseOperation.queryUserByName(user.getId())) {
             Toast.makeText(mContext, "User has exsited", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             DatabaseOperation.UploadUserData(user);
-            Toast.makeText(mContext,"Add user succeed",Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Add user succeed", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -261,7 +256,6 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         }
         return path;
     }
-
 
 
 }

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.work.leeds.facerecognition.callback.onBackClickedListener;
 import com.work.leeds.facerecognition.fragment.AddFragment;
 import com.work.leeds.facerecognition.fragment.MainFragment;
+import com.work.leeds.facerecognition.fragment.SignFragment;
 import com.work.leeds.facerecognition.uimanager.ButtonManager;
 import com.work.leeds.facerecognition.util.Constants;
 
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
     }
 
     AddFragment mAddFragment = null;
+    SignFragment mSignFragment = null;
 
     /**
      * 相关功能按钮点击事件
@@ -121,15 +123,19 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
         FragmentTransaction transaction = fm.beginTransaction();
         switch (function) {
             case Constants.FUNCTION_SIGN:
+                Toast.makeText(MainActivity.this, "sign function", Toast.LENGTH_SHORT).show();
+                if (mSignFragment == null) {
+                    mSignFragment = new SignFragment();
+                }
+                transaction.replace(R.id.main_content, mSignFragment, "three");
+                transaction.commit();
                 break;
             case Constants.FUNCTION_CHECK:
                 break;
             case Constants.FUNCTION_ADD:
-                Toast.makeText(MainActivity.this, "add function", Toast.LENGTH_SHORT).show();
                 if (mAddFragment == null)
                     mAddFragment = new AddFragment();
                 transaction.replace(R.id.main_content, mAddFragment, "two");
-                transaction.addToBackStack("one");
                 transaction.commit();
                 break;
             case Constants.FUNCTION_GUIDE:
@@ -143,9 +149,9 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
     public void onBackClicked() {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-//        if (mMainFragment == null)
-//            mMainFragment = new MainFragment();
-        transaction.replace(R.id.main_content,mMainFragment);
+        if (mMainFragment == null)
+            mMainFragment = new MainFragment();
+        transaction.replace(R.id.main_content, mMainFragment);
         transaction.commit();
     }
 }
