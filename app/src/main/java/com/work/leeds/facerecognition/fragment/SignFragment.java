@@ -105,6 +105,8 @@ public class SignFragment extends Fragment implements View.OnClickListener {
                 if(previewing){
                     mCamera.takePicture(shutterCallback, rawPictureCallback,
                             jpegPictureCallback);
+                    //TODO 进行对比
+
                 }
                 break;
             case R.id.id_add_back_btn:
