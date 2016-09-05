@@ -62,30 +62,12 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         mContext = getContext();
         //查询部门信息 并保存
-        ApartList = getApartInfo();
+        ApartList = DatabaseOperation.getApartInfo();
         aparts = new String[ApartList.size()];
         for (int i = 0; i < ApartList.size(); i++) {
             aparts[i] = ApartList.get(i).getApartmentName();
         }
 
-    }
-
-    private List<Apartment> getApartInfo() {
-        List<Apartment> mList = new ArrayList<>();
-        //查询Apartment表中的所有数据
-        SQLiteDatabase db = MyApplication.myDatabaseHelper.getWritableDatabase();
-        Cursor cursor = db.query("Apartment", null, null, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                //遍历cursor对象
-                int apartnumber = cursor.getInt(cursor.getColumnIndex("apartid"));
-                String apartname = cursor.getString(cursor.getColumnIndex("apartname"));
-                Apartment apart = new Apartment(apartnumber, apartname);
-                mList.add(apart);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return mList;
     }
 
 

@@ -15,8 +15,11 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.work.leeds.facerecognition.R;
+import com.work.leeds.facerecognition.callback.onBackClickedListener;
+
 import java.util.List;
 
 /**
@@ -28,6 +31,7 @@ public class SignFragment extends Fragment implements View.OnClickListener {
     Camera mCamera;
     SurfaceView mSurfaceView;
     private Button mButton;
+    private ImageView mBackBtn;
     private SurfaceHolder surfaceHolder;
     private ProgressDialog mProgressDialog;
     boolean previewing;
@@ -73,18 +77,22 @@ public class SignFragment extends Fragment implements View.OnClickListener {
 
     private void initEvent() {
         mButton.setOnClickListener(this);
+        mBackBtn.setOnClickListener(this);
     }
 
     private void initView(View view) {
         //初始化按钮
         mButton=(Button)view.findViewById(R.id.id_take_pic_btn);
+        mBackBtn =(ImageView)view.findViewById(R.id.id_add_back_btn);
+
         //初始化前置摄像头
         mSurfaceView = (SurfaceView) view.findViewById(R.id.id_surfaceview);
         surfaceHolder = mSurfaceView.getHolder();
         surfaceHolder.addCallback(new SurfaceViewCallback());
         //surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        //初始化提示框
+
+        //todo 初始化提示框,在比对头像的时候显示提示框
         mProgressDialog = new ProgressDialog(getContext());
         mProgressDialog.setMessage("正在提交，请稍后...");
         mProgressDialog.setTitle("提示");
@@ -97,6 +105,11 @@ public class SignFragment extends Fragment implements View.OnClickListener {
                 if(previewing){
                     mCamera.takePicture(shutterCallback, rawPictureCallback,
                             jpegPictureCallback);
+                }
+                break;
+            case R.id.id_add_back_btn:
+                if (getActivity() instanceof onBackClickedListener) {
+                    ((onBackClickedListener) getActivity()).onBackClicked();
                 }
                 break;
         }

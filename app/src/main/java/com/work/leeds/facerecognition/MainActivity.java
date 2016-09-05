@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.work.leeds.facerecognition.callback.onBackClickedListener;
 import com.work.leeds.facerecognition.fragment.AddFragment;
+import com.work.leeds.facerecognition.fragment.CheckFragment;
 import com.work.leeds.facerecognition.fragment.MainFragment;
 import com.work.leeds.facerecognition.fragment.SignFragment;
 import com.work.leeds.facerecognition.uimanager.ButtonManager;
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
 
     AddFragment mAddFragment = null;
     SignFragment mSignFragment = null;
-
+    CheckFragment mCheckFragment =null;
     /**
      * 相关功能按钮点击事件
      *
@@ -131,6 +132,12 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
                 transaction.commit();
                 break;
             case Constants.FUNCTION_CHECK:
+                Toast.makeText(MainActivity.this, "check function", Toast.LENGTH_SHORT).show();
+                if(mCheckFragment==null){
+                    mCheckFragment =new CheckFragment();
+                }
+                transaction.replace(R.id.main_content,mCheckFragment,"four");
+                transaction.commit();
                 break;
             case Constants.FUNCTION_ADD:
                 if (mAddFragment == null)
@@ -140,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
                 break;
             case Constants.FUNCTION_GUIDE:
                 break;
-
         }
     }
 

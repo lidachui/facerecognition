@@ -6,7 +6,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.work.leeds.facerecognition.MyApplication;
+import com.work.leeds.facerecognition.bean.Apartment;
 import com.work.leeds.facerecognition.bean.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by leeds on 2016/8/30.
@@ -67,5 +71,23 @@ public class DatabaseOperation {
 //            Log.d("Query",image);
 //
 //        }while(cursor.moveToNext());
+    }
+
+    public static List<Apartment> getApartInfo() {
+        List<Apartment> mList = new ArrayList<>();
+        //查询Apartment表中的所有数据
+        SQLiteDatabase db = MyApplication.myDatabaseHelper.getWritableDatabase();
+        Cursor cursor = db.query("Apartment", null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                //遍历cursor对象
+                int apartnumber = cursor.getInt(cursor.getColumnIndex("apartid"));
+                String apartname = cursor.getString(cursor.getColumnIndex("apartname"));
+                Apartment apart = new Apartment(apartnumber, apartname);
+                mList.add(apart);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return mList;
     }
 }
