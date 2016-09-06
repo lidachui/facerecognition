@@ -11,6 +11,7 @@ import com.work.leeds.facerecognition.util.Constants;
 
 /**
  * Created by leeds on 2016/8/28.
+ * 主界面按钮管理类
  */
 public class ButtonManager implements View.OnClickListener {
 
@@ -36,45 +37,45 @@ public class ButtonManager implements View.OnClickListener {
     }
 
     private void initView() {
-        mSignBtn=(ImageButton)mView.findViewById(R.id.id_sign_btn);
-        mCheckBtn=(ImageButton)mView.findViewById(R.id.id_check_btn);
-        mAddBtn=(ImageButton)mView.findViewById(R.id.id_add_btn);
-        mGuideBtn=(ImageButton)mView.findViewById(R.id.id_guide_btn);
+        mSignBtn = (ImageButton) mView.findViewById(R.id.id_sign_btn);
+        mCheckBtn = (ImageButton) mView.findViewById(R.id.id_check_btn);
+        mAddBtn = (ImageButton) mView.findViewById(R.id.id_add_btn);
+        mGuideBtn = (ImageButton) mView.findViewById(R.id.id_guide_btn);
     }
 
     @Override
     public void onClick(View v) {
-     switch(v.getId()){
+        switch (v.getId()) {
 
-         case R.id.id_sign_btn:
-             if(monButtonClickedListener!=null)
-                 monButtonClickedListener.onBtnClicked(Constants.FUNCTION_SIGN);
-             break;
-         case R.id.id_check_btn:
-             if(monButtonClickedListener!=null)
-                 monButtonClickedListener.onBtnClicked(Constants.FUNCTION_CHECK);
-             break;
-         case R.id.id_add_btn:
-             if(monButtonClickedListener!=null)
-                 monButtonClickedListener.onBtnClicked(Constants.FUNCTION_ADD);
-             break;
-         case R.id.id_guide_btn:
-             if(monButtonClickedListener!=null)
-                 monButtonClickedListener.onBtnClicked(Constants.FUNCTION_GUIDE);
-             break;
-     }
+            case R.id.id_sign_btn:
+                if (monButtonClickedListener != null)
+                    monButtonClickedListener.onBtnClicked(Constants.FUNCTION_SIGN);
+                break;
+            case R.id.id_check_btn:
+                if (monButtonClickedListener != null)
+                    monButtonClickedListener.onBtnClicked(Constants.FUNCTION_CHECK);
+                break;
+            case R.id.id_add_btn:
+                if (monButtonClickedListener != null)
+                    monButtonClickedListener.onBtnClicked(Constants.FUNCTION_ADD);
+                break;
+            case R.id.id_guide_btn:
+                if (monButtonClickedListener != null)
+                    monButtonClickedListener.onBtnClicked(Constants.FUNCTION_GUIDE);
+                break;
+        }
     }
 
     /**
      * 点击接口调用
      */
-    public interface onButtonClickedListener{
-         void onBtnClicked(int function);
+    public interface onButtonClickedListener {
+        void onBtnClicked(int function);
     }
 
     private onButtonClickedListener monButtonClickedListener;
 
-    public void setonButtonClickedListener(onButtonClickedListener listener){
-        this.monButtonClickedListener=listener;
+    public void setonButtonClickedListener(onButtonClickedListener listener) {
+        this.monButtonClickedListener = listener;
     }
 }

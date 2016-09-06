@@ -3,6 +3,7 @@ package com.work.leeds.facerecognition.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,9 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.work.leeds.facerecognition.R;
 import com.work.leeds.facerecognition.callback.onBackClickedListener;
+import com.work.leeds.facerecognition.ui.InfoView;
+import com.work.leeds.facerecognition.uimanager.InfoViewManager;
 
 import java.util.List;
 
@@ -28,39 +32,25 @@ import java.util.List;
  */
 public class SignFragment extends Fragment implements View.OnClickListener {
 
-    Camera mCamera;
-    SurfaceView mSurfaceView;
-    private Button mButton;
+    private Context mContext;
+
     private ImageView mBackBtn;
+
+    private SurfaceView mSurfaceView;
     private SurfaceHolder surfaceHolder;
-    private ProgressDialog mProgressDialog;
     boolean previewing;
+
+    public Camera mCamera;
     int mCurrentCamIndex = 0;
 
-    Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
-        @Override
-        public void onShutter() {
-        }
-    };
+    LinearLayout mInfoLinearLayout;
+    InfoViewManager mInfoViewManager;
 
-    Camera.PictureCallback rawPictureCallback = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] arg0, Camera arg1) {
-        }
-    };
 
-    Camera.PictureCallback jpegPictureCallback = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] arg0, Camera arg1) {
-             //TODO  拿到图像转成bitmap 进行比较
-
-            previewing = false;
-
-        }
-    };
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.mContext = getContext();
     }
 
     @Nullable
@@ -71,44 +61,51 @@ public class SignFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        initData();
         initView(view);
         initEvent();
     }
 
+    private void initData() {
+        //TODO 获取要签到员工的信息
+
+    }
+
     private void initEvent() {
-        mButton.setOnClickListener(this);
+
         mBackBtn.setOnClickListener(this);
     }
 
     private void initView(View view) {
-        //初始化按钮
-        mButton=(Button)view.findViewById(R.id.id_take_pic_btn);
-        mBackBtn =(ImageView)view.findViewById(R.id.id_add_back_btn);
 
-        //初始化前置摄像头
+        //返回按钮
+        mBackBtn = (ImageView) view.findViewById(R.id.id_add_back_btn);
+
+        //初始化SurfaceView
         mSurfaceView = (SurfaceView) view.findViewById(R.id.id_surfaceview);
         surfaceHolder = mSurfaceView.getHolder();
         surfaceHolder.addCallback(new SurfaceViewCallback());
-        //surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        //todo 初始化提示框,在比对头像的时候显示提示框
-        mProgressDialog = new ProgressDialog(getContext());
-        mProgressDialog.setMessage("正在提交，请稍后...");
-        mProgressDialog.setTitle("提示");
+        //初始化信息栏
+        mInfoLinearLayout = (LinearLayout) view.findViewById(R.id.id_info_layout);
+        mInfoViewManager = new InfoViewManager(mContext, mInfoLinearLayout);
+//        mInfoView =new InfoView(mContext);
+//        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+//        mInfoLinearLayout.addView(mInfoView);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.id_take_pic_btn:
-                if(previewing){
-                    mCamera.takePicture(shutterCallback, rawPictureCallback,
-                            jpegPictureCallback);
-                    //TODO 进行对比
-
-                }
-                break;
+        switch (v.getId()) {
+//            case R.id.id_take_pic_btn:
+//                if (previewing) {
+//                    mCamera.takePicture(shutterCallback, rawPictureCallback,
+//                            jpegPictureCallback);
+//                    //TODO 进行对比
+//
+//                }
+//                break;
             case R.id.id_add_back_btn:
                 if (getActivity() instanceof onBackClickedListener) {
                     ((onBackClickedListener) getActivity()).onBackClicked();
@@ -153,6 +150,7 @@ public class SignFragment extends Fragment implements View.OnClickListener {
             previewing = false;
         }
     }
+
 
     /**
      * 根据横竖屏自动调节preview方向
@@ -225,5 +223,25 @@ public class SignFragment extends Fragment implements View.OnClickListener {
         return cam;
     }
 
+
+    Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+        @Override
+        public void onShutter() {
+        }
+    };
+
+    Camera.PictureCallback rawPictureCallback = new Camera.PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] arg0, Camera arg1) {
+        }
+    };
+
+    Camera.PictureCallback jpegPictureCallback = new Camera.PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] arg0, Camera arg1) {
+            //TODO  拿到图像转成bitmap 进行比较
+            previewing = false;
+        }
+    };
 
 }

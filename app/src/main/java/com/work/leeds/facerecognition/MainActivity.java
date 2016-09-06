@@ -24,7 +24,9 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
 
 
     FrameLayout mFrameLayout;
-    TextView mTextview;
+
+    //TextView mTextview;
+
     LinearLayout mLinearLayout;
     ButtonManager mButtonManager;
     MainFragment mMainFragment;
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
         //设置默认的Fragment
         initFragment(savedInstanceState);
         //设置默认的text
-        mTextview.setText("欢迎使用");
+       // mTextview.setText("欢迎使用");
         //初始化点击事件
         initiEvent();
 
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements ButtonManager.onB
 
     private void initView() {
         mFrameLayout = (FrameLayout) findViewById(R.id.main_content);
-        mTextview = (TextView) findViewById(R.id.id_info_text);
+       // mTextview = (TextView) findViewById(R.id.id_info_text);
         mLinearLayout = (LinearLayout) findViewById(R.id.id_button_area);
         mButtonManager = new ButtonManager(MainActivity.this, mLinearLayout);
     }
