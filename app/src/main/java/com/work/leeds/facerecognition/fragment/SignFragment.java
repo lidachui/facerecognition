@@ -2,9 +2,11 @@ package com.work.leeds.facerecognition.fragment;
 
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,13 +17,23 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.work.leeds.facerecognition.R;
+import com.work.leeds.facerecognition.callback.FaceCompareCallback;
+import com.work.leeds.facerecognition.callback.TakePicCallback;
 import com.work.leeds.facerecognition.callback.onBackClickedListener;
-import com.work.leeds.facerecognition.ui.InfoView;
 import com.work.leeds.facerecognition.uimanager.InfoViewManager;
 
 import java.util.List;
@@ -30,7 +42,7 @@ import java.util.List;
  * Created by leeds on 2016/9/1.
  * 签到类
  */
-public class SignFragment extends Fragment implements View.OnClickListener {
+public class SignFragment extends Fragment {
 
     private Context mContext;
 
@@ -45,6 +57,8 @@ public class SignFragment extends Fragment implements View.OnClickListener {
 
     LinearLayout mInfoLinearLayout;
     InfoViewManager mInfoViewManager;
+    Bitmap mTestBitmap=null;
+    Bitmap mUserBitmap=null;
 
 
     @Override
@@ -61,19 +75,9 @@ public class SignFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        initData();
+
         initView(view);
         initEvent();
-    }
-
-    private void initData() {
-        //TODO 获取要签到员工的信息
-
-    }
-
-    private void initEvent() {
-
-        mBackBtn.setOnClickListener(this);
     }
 
     private void initView(View view) {
@@ -90,30 +94,8 @@ public class SignFragment extends Fragment implements View.OnClickListener {
         //初始化信息栏
         mInfoLinearLayout = (LinearLayout) view.findViewById(R.id.id_info_layout);
         mInfoViewManager = new InfoViewManager(mContext, mInfoLinearLayout);
-//        mInfoView =new InfoView(mContext);
-//        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-//        mInfoLinearLayout.addView(mInfoView);
-    }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-//            case R.id.id_take_pic_btn:
-//                if (previewing) {
-//                    mCamera.takePicture(shutterCallback, rawPictureCallback,
-//                            jpegPictureCallback);
-//                    //TODO 进行对比
-//
-//                }
-//                break;
-            case R.id.id_add_back_btn:
-                if (getActivity() instanceof onBackClickedListener) {
-                    ((onBackClickedListener) getActivity()).onBackClicked();
-                }
-                break;
-        }
     }
-
 
     private class SurfaceViewCallback implements SurfaceHolder.Callback {
 
@@ -240,8 +222,60 @@ public class SignFragment extends Fragment implements View.OnClickListener {
         @Override
         public void onPictureTaken(byte[] arg0, Camera arg1) {
             //TODO  拿到图像转成bitmap 进行比较
+            mTestBitmap = BitmapFactory.decodeByteArray(arg0, 0, arg0.length);
             previewing = false;
         }
     };
+
+    private void initEvent() {
+
+        mBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof onBackClickedListener) {
+                    ((onBackClickedListener) getActivity()).onBackClicked();
+                }
+            }
+        });
+        mInfoViewManager.setmTakePicCalllback(new TakePicCallback() {
+            @Override
+            public void takePhoto() {
+                if (previewing) {
+                    mCamera.takePicture(shutterCallback, rawPictureCallback,
+                            jpegPictureCallback);
+
+                }
+            }
+
+            @Override
+            public void resetCamera() {
+                if (!previewing) {
+                    mCamera.startPreview();
+                    previewing = true;
+                    mTestBitmap = null;
+                }
+            }
+        });
+        mInfoViewManager.setmFaceCompareCallback(new FaceCompareCallback() {
+            @Override
+            public void CompareFace() {
+                if(mInfoViewManager.getmUser()==null){
+                    Toast.makeText(mContext,"用户信息尚未获取",Toast.LENGTH_SHORT).show();
+                }
+                else if(mTestBitmap==null){
+                    Toast.makeText(mContext,"尚未拍照",Toast.LENGTH_SHORT).show();
+                }else{
+                    System.out.println("imageUrl------>"+mInfoViewManager.getmUser().getImageUri());
+                    //todo 根据对应位置加载本机的图片，因为目前本地sqlite中只存了图片在内存中的位置
+                    mUserBitmap =BitmapFactory.decodeFile(mInfoViewManager.getmUser().getImageUri());
+                    //TODO 开始图片对比
+
+                    System.out.println("imageBitmap---->"+mUserBitmap.toString());
+                }
+
+
+            }
+        });
+    }
 
 }

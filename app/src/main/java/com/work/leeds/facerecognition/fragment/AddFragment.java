@@ -152,7 +152,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         user.setImageUri(mPictureText.getText().toString().trim());
         user.setApartId(DatabaseOperation.queryApartIdByName(mAprtmentText.getText().toString().trim()));
         //将数据添加到数据库
-        if (DatabaseOperation.queryUserByName(user.getId())) {
+        if (DatabaseOperation.IsUserExist(user.getId())) {
             Toast.makeText(mContext, "User has exsited", Toast.LENGTH_SHORT).show();
         } else {
             DatabaseOperation.UploadUserData(user);
