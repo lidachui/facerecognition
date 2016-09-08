@@ -268,8 +268,9 @@ public class SignFragment extends Fragment {
                     System.out.println("imageUrl------>"+mInfoViewManager.getmUser().getImageUri());
                     //todo 根据对应位置加载本机的图片，因为目前本地sqlite中只存了图片在内存中的位置
                     mUserBitmap =BitmapFactory.decodeFile(mInfoViewManager.getmUser().getImageUri());
-                    //TODO 开始图片对比
+                    //转成Base64编码
 
+                    //TODO 开始图片对比
                     System.out.println("imageBitmap---->"+mUserBitmap.toString());
                 }
 
