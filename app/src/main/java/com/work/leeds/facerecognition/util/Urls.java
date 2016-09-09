@@ -6,7 +6,6 @@ package com.work.leeds.facerecognition.util;
  */
 public class Urls {
 
-    public static final String url = "http://api.facecore.cn";
     public static final String mykey = "e0df182191b5f5bf9f0bf5a1283c2620";
 
     /**
@@ -15,7 +14,7 @@ public class Urls {
      * @return
      */
     public static String getFacePropertyUrl() {
-        return url + "/api/facedetect?appkey=" + mykey;
+        return  "http://api.facecore.cn/api/facedetect?appkey=c34e7a2059d771d00b9300de725029f7";
     }
 
     /**
@@ -25,6 +24,6 @@ public class Urls {
      * @return
      */
     public static String getFaceSimilarityUrl() {
-        return url + "/api/facedetectandcompare?appkey=" + mykey;
+        return "http://api.facecore.cn/api/facedetectandcompare?appkey=c34e7a2059d771d00b9300de725029f7";
     }
 }

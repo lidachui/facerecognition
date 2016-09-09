@@ -2,11 +2,11 @@ package com.work.leeds.facerecognition.fragment;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,20 +21,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.facebook.common.executors.CallerThreadExecutor;
-import com.facebook.common.references.CloseableReference;
-import com.facebook.datasource.DataSource;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.core.ImagePipeline;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
-import com.facebook.imagepipeline.image.CloseableImage;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.work.leeds.facerecognition.R;
 import com.work.leeds.facerecognition.callback.FaceCompareCallback;
 import com.work.leeds.facerecognition.callback.TakePicCallback;
 import com.work.leeds.facerecognition.callback.onBackClickedListener;
+import com.work.leeds.facerecognition.internet.GetDegreeOfSimilarity;
 import com.work.leeds.facerecognition.uimanager.InfoViewManager;
+import com.work.leeds.facerecognition.util.BitmapUtil;
 
 import java.util.List;
 
@@ -42,7 +35,7 @@ import java.util.List;
  * Created by leeds on 2016/9/1.
  * 签到类
  */
-public class SignFragment extends Fragment {
+public class SignFragment extends Fragment implements FaceCompareCallback {
 
     private Context mContext;
 
@@ -57,8 +50,10 @@ public class SignFragment extends Fragment {
 
     LinearLayout mInfoLinearLayout;
     InfoViewManager mInfoViewManager;
-    Bitmap mTestBitmap=null;
-    Bitmap mUserBitmap=null;
+    Bitmap mTestBitmap = null;
+    Bitmap mUserBitmap = null;
+    private ProgressDialog progressDialog;
+    GetDegreeOfSimilarity gos;
 
 
     @Override
@@ -94,6 +89,14 @@ public class SignFragment extends Fragment {
         //初始化信息栏
         mInfoLinearLayout = (LinearLayout) view.findViewById(R.id.id_info_layout);
         mInfoViewManager = new InfoViewManager(mContext, mInfoLinearLayout);
+
+        //初始化dialog
+        progressDialog = new ProgressDialog(mContext);
+        progressDialog.setTitle("正在处理数据中");
+        progressDialog.setMessage("请稍后。。");
+
+        //初始化GetDegreeeOfSimilarity
+        gos = new GetDegreeOfSimilarity(this);
 
     }
 
@@ -229,6 +232,7 @@ public class SignFragment extends Fragment {
 
     private void initEvent() {
 
+        //返回按钮
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -237,6 +241,8 @@ public class SignFragment extends Fragment {
                 }
             }
         });
+
+        //拍照和重置
         mInfoViewManager.setmTakePicCalllback(new TakePicCallback() {
             @Override
             public void takePhoto() {
@@ -255,28 +261,76 @@ public class SignFragment extends Fragment {
                     mTestBitmap = null;
                 }
             }
-        });
-        mInfoViewManager.setmFaceCompareCallback(new FaceCompareCallback() {
+
             @Override
-            public void CompareFace() {
-                if(mInfoViewManager.getmUser()==null){
-                    Toast.makeText(mContext,"用户信息尚未获取",Toast.LENGTH_SHORT).show();
-                }
-                else if(mTestBitmap==null){
-                    Toast.makeText(mContext,"尚未拍照",Toast.LENGTH_SHORT).show();
-                }else{
-                    System.out.println("imageUrl------>"+mInfoViewManager.getmUser().getImageUri());
+            public void comparePic() {
+                if (mInfoViewManager.getmUser() == null) {
+                    Toast.makeText(mContext, "用户信息尚未获取", Toast.LENGTH_SHORT).show();
+                } else if (mTestBitmap == null) {
+                    Toast.makeText(mContext, "尚未拍照", Toast.LENGTH_SHORT).show();
+                } else {
+                    System.out.println("imageUrl------>" + mInfoViewManager.getmUser().getImageUri());
                     //todo 根据对应位置加载本机的图片，因为目前本地sqlite中只存了图片在内存中的位置
-                    mUserBitmap =BitmapFactory.decodeFile(mInfoViewManager.getmUser().getImageUri());
-                    //转成Base64编码
-
-                    //TODO 开始图片对比
-                    System.out.println("imageBitmap---->"+mUserBitmap.toString());
+                    mUserBitmap = BitmapFactory.decodeFile(mInfoViewManager.getmUser().getImageUri());
+                    if (mUserBitmap != null && mTestBitmap != null) {
+                        //转成Base64编码
+                        String testBase64 = BitmapUtil.bitmaptoString(mTestBitmap);
+                        String userBase64 = BitmapUtil.bitmaptoString(mUserBitmap);
+                        //TODO 开始图片对比
+                        compareFace(testBase64, userBase64);
+                        //TODO 显示progessDialog
+                        showDialog();
+                    }
                 }
-
-
             }
         });
+    }
+
+
+    @Override
+    public void compareFace(String face1, String face2) {
+        gos.getDegreeOfSimilarity(face1, face2);
+    }
+
+    @Override
+    public void showDialog() {
+        progressDialog.show();
+    }
+
+    @Override
+    public void dismissDialog() {
+        progressDialog.dismiss();
+    }
+
+    @Override
+    public void signSucceed() {
+        //TODO 提示签到成功
+        Toast.makeText(mContext,"签到成功",Toast.LENGTH_SHORT).show();
+        //TODO 修改相关数据
+
+        //TODO 释放相机
+        if (!previewing) {
+            mCamera.startPreview();
+            previewing = true;
+            mTestBitmap = null;
+        }
+    }
+
+    @Override
+    public void signFailed() {
+        //TODO 提示签到失败
+        Toast.makeText(mContext,"签到失败",Toast.LENGTH_SHORT).show();
+        //TODO 释放相机
+        if (!previewing) {
+            mCamera.startPreview();
+            previewing = true;
+            mTestBitmap = null;
+        }
+    }
+
+    @Override
+    public void signError() {
+
     }
 
 }

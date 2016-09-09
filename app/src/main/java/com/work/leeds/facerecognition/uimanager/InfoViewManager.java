@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.work.leeds.facerecognition.R;
 import com.work.leeds.facerecognition.bean.User;
-import com.work.leeds.facerecognition.callback.FaceCompareCallback;
 import com.work.leeds.facerecognition.callback.TakePicCallback;
 import com.work.leeds.facerecognition.sqlite.DatabaseOperation;
 
@@ -34,12 +33,6 @@ public class InfoViewManager implements View.OnClickListener {
 
     public void setmTakePicCalllback(TakePicCallback mTakePicCalllback) {
         this.mTakePicCalllback = mTakePicCalllback;
-    }
-
-    private FaceCompareCallback mFaceCompareCallback;
-
-    public void setmFaceCompareCallback(FaceCompareCallback mFaceCompareCallback) {
-        this.mFaceCompareCallback = mFaceCompareCallback;
     }
 
     public InfoViewManager(Context mContext, View mView) {
@@ -114,8 +107,9 @@ public class InfoViewManager implements View.OnClickListener {
                 break;
             case R.id.id_staff_sign_btn:
                 //TODO 回调对比方式
-                mFaceCompareCallback.CompareFace();
+                mTakePicCalllback.comparePic();
                 break;
         }
     }
+
 }

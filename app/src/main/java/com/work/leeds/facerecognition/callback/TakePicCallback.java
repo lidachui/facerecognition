@@ -7,4 +7,5 @@ package com.work.leeds.facerecognition.callback;
 public interface TakePicCallback {
         void takePhoto();
         void resetCamera();
+        void comparePic();
 }

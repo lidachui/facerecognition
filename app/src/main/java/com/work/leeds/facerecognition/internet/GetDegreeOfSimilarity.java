@@ -5,6 +5,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.work.leeds.facerecognition.callback.FaceCompareCallback;
+import com.work.leeds.facerecognition.util.JsonUtil;
 import com.work.leeds.facerecognition.util.Urls;
 import com.work.leeds.facerecognition.util.VolleyUtil;
 
@@ -16,10 +18,11 @@ import java.util.Map;
  * 获取人脸相似度
  */
 public class GetDegreeOfSimilarity {
-    private int resultValue;
 
-    public int getResultValue() {
-        return resultValue;
+    FaceCompareCallback view;
+
+    public GetDegreeOfSimilarity(FaceCompareCallback view) {
+        this.view = view;
     }
 
     /**
@@ -30,20 +33,35 @@ public class GetDegreeOfSimilarity {
      * @param firstBaseValue
      * @param secondBaseValue
      */
-    public static void getDegreeOfSimilarity(final String firstBaseValue, final String secondBaseValue) {
+    public void getDegreeOfSimilarity(final String firstBaseValue, final String secondBaseValue) {
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST,
                 Urls.getFaceSimilarityUrl(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
-                        //TODO 解析
+                        System.out.println("request succeed----->");
+                        //Dialog消失
+                        view.dismissDialog();
+                        //解析
+                        float code = JsonUtil.parseCompareResult(s);
+                        if (code == 1.0 || code == -2.0 || code == -3.0 || code > 0.5){
+                            view.signFailed();
+                            System.out.println("sign failed----->");
+                        }
+                        else {
+                            view.signSucceed();
+                            //todo 向数据库添加打卡数据
+                            System.out.println("sign succeed----->");
+                        }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        //TODO 报错
+                        //回调接口报错
+                        view.dismissDialog();
+                        view.signError();
                     }
                 }
         ) {
