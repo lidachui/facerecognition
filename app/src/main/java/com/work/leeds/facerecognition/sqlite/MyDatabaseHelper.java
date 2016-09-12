@@ -25,8 +25,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     //记录表
     public static final String CREATE_RECORD = "create table SignRecord ("
             + "recordid  integer primary key autoincrement, "
-            + "staffid integer, "
-            + "time integer)";
+            + "staffid text, "
+            + "time text)";
 
     public MyDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);

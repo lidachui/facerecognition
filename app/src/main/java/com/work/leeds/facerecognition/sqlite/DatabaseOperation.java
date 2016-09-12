@@ -98,6 +98,7 @@ public class DatabaseOperation {
 
     /**
      * 获取全部部门信息
+     *
      * @return
      */
     public static List<Apartment> getApartInfo() {
@@ -120,17 +121,36 @@ public class DatabaseOperation {
 
     /**
      * 根据部门id获得部门名字
+     *
      * @param apartId
      * @return
      */
-    public static String queryApartNameById(int apartId){
+    public static String queryApartNameById(int apartId) {
         String apartName;
         SQLiteDatabase db = MyApplication.myDatabaseHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery(
                 "select apartname from Apartment where apartid = ?",
-                new String[]{""+apartId});
+                new String[]{"" + apartId});
         cursor.moveToFirst();
         apartName = cursor.getString(0);
         return apartName;
+    }
+
+
+    /**
+     * 上传签到记录
+     *
+     * @param staffId
+     * @param signTime
+     * @return
+     */
+    public static boolean upLoadSignRecord(String staffId, String signTime) {
+
+        SQLiteDatabase db = MyApplication.myDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("staffid", staffId);
+        values.put("time", signTime);
+        db.insert("SignRecord", null, values);
+        return true;
     }
 }

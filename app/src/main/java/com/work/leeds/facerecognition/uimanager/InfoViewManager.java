@@ -1,6 +1,7 @@
 package com.work.leeds.facerecognition.uimanager;
 
 import android.content.Context;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +11,9 @@ import com.work.leeds.facerecognition.R;
 import com.work.leeds.facerecognition.bean.User;
 import com.work.leeds.facerecognition.callback.TakePicCallback;
 import com.work.leeds.facerecognition.sqlite.DatabaseOperation;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by leeds on 2016/9/6.
@@ -26,7 +30,7 @@ public class InfoViewManager implements View.OnClickListener {
     private Button mTakePicBtn;
     private Button mResetBtn;
     private Button mSignBtn;
-    private User mUser=null;
+    private User mUser = null;
 
 
     private TakePicCallback mTakePicCalllback;
@@ -87,11 +91,11 @@ public class InfoViewManager implements View.OnClickListener {
                 if (mNumberText.getText().toString().equals("")) {
 
                 } else {
-                     mUser = DatabaseOperation.queryUserInfoById(mNumberText.getText().toString().trim());
+                    mUser = DatabaseOperation.queryUserInfoById(mNumberText.getText().toString().trim());
                     if (mUser != null) {
                         mNameText.setText(mUser.getName());
                         mApartText.setText(DatabaseOperation.queryApartNameById(mUser.getApartId()));
-                    }else{
+                    } else {
                         mNameText.setText("null");
                         mApartText.setText("null");
                     }
@@ -112,4 +116,25 @@ public class InfoViewManager implements View.OnClickListener {
         }
     }
 
+    /**
+     * 重新设置文本框相关内容
+     */
+    public void resetView() {
+        mNumberText.setText("");
+        mNameText.setText("Name");
+        mApartText.setText("Apartment");
+        mUser = null;
+    }
+
+    /**
+     * 上传资料
+     */
+    public void updateRecord() {
+        //用户id
+        String userid = mNumberText.getText().toString();
+        //获取当前时间
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd/HH:mm");//设置日期格式
+        String time = df.format(new Date());// new Date()为获取当前系统时间
+        DatabaseOperation.upLoadSignRecord(userid, time);
+    }
 }

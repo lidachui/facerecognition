@@ -45,13 +45,11 @@ public class GetDegreeOfSimilarity {
                         view.dismissDialog();
                         //解析
                         float code = JsonUtil.parseCompareResult(s);
-                        if (code == 1.0 || code == -2.0 || code == -3.0 || code > 0.5){
+                        if (code == 1.0 || code == -2.0 || code == -3.0 || code > 0.5) {
                             view.signFailed();
                             System.out.println("sign failed----->");
-                        }
-                        else {
+                        } else {
                             view.signSucceed();
-                            //todo 向数据库添加打卡数据
                             System.out.println("sign succeed----->");
                         }
                     }

@@ -5,6 +5,7 @@ package com.work.leeds.facerecognition.bean;
  * 用户类
  */
 public class User {
+
     String id;
     String name;
     int apartId;

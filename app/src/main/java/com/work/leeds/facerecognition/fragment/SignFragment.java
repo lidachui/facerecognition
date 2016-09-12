@@ -305,9 +305,11 @@ public class SignFragment extends Fragment implements FaceCompareCallback {
     @Override
     public void signSucceed() {
         //TODO 提示签到成功
-        Toast.makeText(mContext,"签到成功",Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "签到成功", Toast.LENGTH_SHORT).show();
+        //TODO 提交数据到数据库
+        mInfoViewManager.updateRecord();
         //TODO 修改相关数据
-
+        mInfoViewManager.resetView();
         //TODO 释放相机
         if (!previewing) {
             mCamera.startPreview();
@@ -319,7 +321,7 @@ public class SignFragment extends Fragment implements FaceCompareCallback {
     @Override
     public void signFailed() {
         //TODO 提示签到失败
-        Toast.makeText(mContext,"签到失败",Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "签到失败", Toast.LENGTH_SHORT).show();
         //TODO 释放相机
         if (!previewing) {
             mCamera.startPreview();
